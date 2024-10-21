@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Administração - {{ site_header }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="background-color: #536eb3; color: white; padding: 20px;">
+    <h1 class="text-center mb-4">{{ site_header }}</h1>
+
+    <div class="row">
+        <div class="col-md-12">
+            {% block content_main %}
+            <h2>Gerenciar Dados</h2>
+            <p>Utilize as opções abaixo para gerenciar os dados:</p>
+            <hr>
+            {% for app in app_list %}
+                <div class="app-list">
+                    <h3>{{ app.name }}</h3>
+                    <ul>
+                        {% for model in app.models %}
+                            <li>
+                                <a href="{{ model.admin_url }}">{{ model.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}
