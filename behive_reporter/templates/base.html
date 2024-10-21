@@ -12,6 +12,19 @@
         .navbar-custom {
             background-color: #536eb3; /* Cor personalizada para o navbar */
         }
+        .btn-custom {
+            background-color: white;
+            color: #536eb3; /* Cor do texto */
+            width: 100%;
+            height: 50px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+            margin-bottom: 10px;
+        }
+        .btn-custom:hover {
+            background-color: #536eb3; /* Azul ao passar o mouse */
+            color: white; /* Texto branco ao passar o mouse */
+        }
     </style>
 </head>
 <body>
@@ -26,17 +39,17 @@
             <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Sair</a>
+                        <a class="nav-link" href="{% url 'logout' %}" aria-label="Sair">Sair</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'password_change' %}">Alterar Senha</a>
+                        <a class="nav-link" href="{% url 'password_change' %}" aria-label="Alterar Senha">Alterar Senha</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'admin:index' %}">Admin</a>
+                        <a class="nav-link" href="{% url 'admin:index' %}" aria-label="Admin">Admin</a>
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        <a class="nav-link" href="{% url 'login' %}" aria-label="Login">Login</a>
                     </li>
                 {% endif %}
             </ul>

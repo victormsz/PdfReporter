@@ -6,6 +6,17 @@
 <div class="container-fluid" style="background-color: #536eb3; color: white; padding: 20px;">
     <h1 class="text-center mb-4">{{ site_header }}</h1>
 
+    <div class="text-center mb-4">
+        <a href="{% url 'admin:behive_reporter_add' %}" class="btn btn-custom">Adicionar Novo</a>
+        {% if object %}
+            <a href="{% url 'admin:behive_reporter_change' object.id %}" class="btn btn-custom">Editar</a>
+            <form action="{% url 'admin:behive_reporter_delete' object.id %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-custom">Excluir</button>
+            </form>
+        {% endif %}
+    </div>
+
     <div class="row">
         <div class="col-md-12">
             {% block content_main %}
@@ -13,12 +24,12 @@
             <p>Utilize as opções abaixo para gerenciar os dados:</p>
             <hr>
             {% for app in app_list %}
-                <div class="app-list">
+                <div class="app-list mb-4">
                     <h3>{{ app.name }}</h3>
-                    <ul>
+                    <ul class="list-unstyled">
                         {% for model in app.models %}
-                            <li>
-                                <a href="{{ model.admin_url }}">{{ model.name }}</a>
+                            <li class="mb-2">
+                                <a href="{{ model.admin_url }}" class="btn btn-link text-white">{{ model.name }}</a> <!-- Link como botão -->
                             </li>
                         {% endfor %}
                     </ul>

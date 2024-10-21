@@ -1,13 +1,14 @@
 from django.http import HttpResponse
 from io import BytesIO
-from .models import TemplateRelatorio  # Corrected import
-from .models import Foto  # Corrected import
-from django.db import models
+from django.shortcuts import get_object_or_404
 from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy  
 from django.views.generic import CreateView 
-
+from .models import TemplateRelatorio, Foto  # Imports corrigidos e 
+import os
+from django.conf import settings
 
 class SignUpView(CreateView):
     form_class = UserCreationForm
@@ -17,35 +18,38 @@ class SignUpView(CreateView):
 def index(request):
     return HttpResponse("Reporter Index")
 
-
 def templates(request):
     return HttpResponse("Você está vendo templates existentes")
 
-
-def templates_id(request, idtemplate_relatorio):  # Corrected parameter name
-    return HttpResponse(f"Você está no template {idtemplate_relatorio}")  # Using f-string for better formatting
+def templates_id(request, idtemplate_relatorio):
+    return HttpResponse(f"Você está no template {idtemplate_relatorio}")
 
 def generate_pdf(request, idfoto):
-    # Get the photo object by its id
-    Foto = Foto.objects.get(id=idfoto)
-    
-    # Start creating the PDF
+    # Obter o objeto da foto pelo seu id ou retornar 404 se não encontrado
+    foto = get_object_or_404(Foto, idfoto=idfoto)
+
+    # Criar o caminho absoluto da imagem
+    caminho_absoluto = os.path.join(settings.MEDIA_ROOT, foto.foto.name)  # Use 'foto.foto.name' para obter o caminho correto
+
+    # Iniciar a criação do PDF
     buffer = BytesIO()
-    pdf = canvas.Canvas(buffer)
-    
-    # Add some content, for example, the photo address and the image itself
-    pdf.drawString(100, 800, f"Desccricao: {Foto.descricao}")
-    pdf.drawString(100, 780, f"Photo Path: {Foto.caminho}")
-    
-    # Assuming the image is stored in the 'media' folder, you can add it to the PDF
-    pdf.drawImage(Foto.caminho, 100, 600, width=200, height=200)
-    
-    # Finalize the PDF
+    pdf = canvas.Canvas(buffer, pagesize=letter)
+
+    # Adicionar conteúdo ao PDF
+    pdf.drawString(100, 750, f"Descrição: {foto.descricao}")
+    pdf.drawString(100, 730, f"Caminho da Foto: {foto.caminho}")
+
+    # Adicionando a imagem ao PDF, verificando se o caminho é válido
+    try:
+        pdf.drawImage(caminho_absoluto, 100, 500, width=200, height=200)
+    except Exception as e:
+        pdf.drawString(100, 500, "Erro ao carregar a imagem: " + str(e))
+
+    # Finalizar o PDF
     pdf.showPage()
     pdf.save()
-    
-    buffer.seek(0)
-    
-    # Return the PDF as a response
-    return HttpResponse(buffer, content_type='application/pdf')
 
+    buffer.seek(0)
+
+    # Retornar o PDF como resposta
+    return HttpResponse(buffer, content_type='application/pdf')
