@@ -19,7 +19,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.urls import path, include
 from django.views.generic.base import TemplateView
-from reporter.views import generate_pdf, SignUpView
+from reporter.views import SignUpView , gerar_pdf, fotos_por_sitio , Create_pdf , gerar_pdf_view
 from django.urls import path
 
 
@@ -27,9 +27,15 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
-    path('generate-pdf/<int:idfoto>/', generate_pdf, name='generate_pdf'),
+    path('generate-pdf/', gerar_pdf, name='generate_pdf'),
     path("signup/", SignUpView.as_view(), name="signup"),
+    path('fotos/', fotos_por_sitio, name='fotos_por_sitio'),
+    path('gerar_pdf/', gerar_pdf_view, name='gerar_pdf_view'),
+    path('create_pdf/<int:sitio_id>/', Create_pdf, name='create_pdf'),
+    
 
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
 if settings.DEBUG:  # Apenas durante o desenvolvimento
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
