@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Selecione um Sitio para Ver as Fotos</h1>
+    
+    <!-- Formulário para selecionar o sitio -->
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="sitio">Escolha um Sitio:</label>
+            <select name="sitio" id="sitio" class="form-control">
+                <option value="">Selecione um Sitio</option>
+                {% for sitio in sitios %}
+                    <option value="{{ sitio.id }}" {% if sitio.id == sitio_selecionado %}selected{% endif %}>{{ sitio.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Ver Fotos</button>
+    </form>
+
+    {% if fotos %}
+        <h2>Fotos do Sitio "{{ nome_sitio }}":</h2>
+        <div class="row mt-4">
+            {% for foto in fotos %}
+                <div class="col-md-4">
+                    <img src="{{ foto.foto.url }}" class="img-fluid" alt="{{ foto.descricao }}">
+                </div>
+            {% endfor %}
+        </div>
+    {% elif sitio_selecionado %}
+        <p>Nenhuma foto encontrada para o sitio selecionado.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,5 +1,7 @@
 from django.db import models
 from PIL import Image
+import uuid
+import os
 from PIL.ExifTags import TAGS
 from django.conf import settings
 from django.contrib.auth.hashers import make_password, check_password  # Importar métodos para segurança de senhas
@@ -33,17 +35,26 @@ class Foto(models.Model):
     idfoto = models.AutoField(primary_key=True)
     foto = models.ImageField(upload_to='fotos/')
     caminho = models.CharField(max_length=255, blank=True, editable=False)  # Caminho da imagem
+    nome = models.CharField(max_length=45, blank=True)
     descricao = models.TextField()  # Manter como TextField para descrições mais longas
     metadados = models.JSONField(null=True, blank=True, editable=False)  # Metadados da imagem
     idsitio = models.ForeignKey(Sitio, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.descricao
-
+    
     def save(self, *args, **kwargs):
-        """Override save method to extract metadata and set file path."""
         if self.foto:
-            self.caminho = f"{settings.MEDIA_URL}{self.foto.name}"
+            # Renomeia a imagem com base no nome fornecido
+            if self.nome:
+                # Obtém a extensão do arquivo original
+                ext = os.path.splitext(self.foto.name)[1]
+                # Define o novo nome do arquivo sem criar diretórios extras
+                novo_nome = f"{self.nome}{ext}"
+
+                # Atualiza o caminho para refletir o novo nome sem a criação de pasta extra
+                self.foto.name = os.path.join('', novo_nome)
+                self.caminho = novo_nome
 
             # Extrai metadados da imagem
             try:
@@ -55,7 +66,6 @@ class Foto(models.Model):
                 self.metadados = {}  # Caso de erro, define como vazio
 
         super().save(*args, **kwargs)
-
 
 class Administrador(models.Model):
     idadministrador = models.AutoField(primary_key=True)
@@ -128,9 +138,3 @@ class RelatorioFinal(models.Model):
 
     def __str__(self):
         return f"Report from {self.data} - {self.idsitio.nome}"
-
-    def gerar_excel(self):
-        pass  # Implementação futura
-
-    def gerar_pdf(self):
-        pass  # Implementação futura

@@ -3,7 +3,7 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<div class="container-fluid d-flex justify-content-center align-items-center" style="height: 100vh; background-color: #536eb3;">
+<div class="container-fluid d-flex justify-content-center align-items-center" style="height: fit-content; background-color: #536eb3;">
   <div class="col-md-4 text-center">
     <div class="card shadow-sm" style="border: none; border-radius: 10px; background-color: #536eb3; color: white;">
       <div class="card-body">
@@ -12,15 +12,22 @@
           <h5 class="card-title">Olá, {{ user.username }}!</h5>
           <p class="card-text">O que você gostaria de fazer?</p>
           <form action="{% url 'password_change' %}" method="get" class="mb-3">
+            {% csrf_token %}
             <button type="submit" class="btn btn-custom">Alterar Senha</button>
           </form>
           <form action="{% url 'admin:index' %}" method="get" class="mb-3">
+            {% csrf_token %}
             <button type="submit" class="btn btn-custom">Área de Administração</button>
           </form>
-          <form action="{% url 'logout' %}" method="post" class="mt-auto">
+          <form action="{% url 'generate_pdf' %}" method="GET" class="mb-3">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-custom">Gerar PDF</button>
+          </form>
+          <form action="{% url 'logout' %}" method="post" class="mb-3">
             {% csrf_token %}
             <button type="submit" class="btn btn-custom">Sair</button>
           </form>
+          
         {% else %}
           <h5 class="card-title">Você não está logado</h5>
           <p class="card-text">Faça o login para acessar seu painel.</p>
